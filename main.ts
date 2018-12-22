@@ -181,6 +181,27 @@ namespace robobloq {
             list[size-1] = this.sumCheck(list,0);
             return list;
         }
+        // 获取声音传感器数值
+        getSoundValue(order: number, port: number): number[]{
+            let size: number = 7 ;
+            let list: number[]= [82,66, size, order, 0xA7, port,0];
+            list[size-1] = this.sumCheck(list,0);
+            return list;
+        }
+        // 获取人体红外传感器数值
+        getHomanValue(order: number, port: number): number[]{
+            let size: number = 7 ;
+            let list: number[]= [82,66, size, order, 0XA8, port,0];
+            list[size-1] = this.sumCheck(list,0);
+            return list;
+        }
+        //  获取湿度传感器数值
+        getTemperatureValue(order: number, port: number): number[]{
+            let size: number = 7 ;
+            let list: number[]= [82,66, size, order, 0xA5, port,0];
+            list[size-1] = this.sumCheck(list,0);
+            return list;
+        }
         /**
          * 获取超声波数值（单位 cm）
          */
@@ -188,6 +209,30 @@ namespace robobloq {
             if (!itme || itme.length < 6) return 0;
             const value :number= itme[5]  * 256 + itme[6];
             return Math.idiv(value , 10);
+        }
+        // 获取声音传感器数值
+        parseSoundValue(itme: number[]): number{
+            if (!itme || itme.length <= 5) return 0;
+            const value = itme[5]* 256 + itme[6];
+            return value;
+        }
+        // 获取人体红外传感器数值
+        parseHomanValue(itme: number[]): number{
+            if (!itme || itme.length <= 5) return 0;
+            const value = itme[5];
+            return value;
+        }
+        // 获取温度传感器数值
+        parseTemperatureValue(itme: number[]): number{
+            if (!itme || itme.length <= 5) return 0;
+            const value = itme[7];
+            return value;
+        }
+        // 获取湿度传感器数值
+        parseHumidityValue(itme: number[]): number{
+            if (!itme || itme.length <= 5) return 0;
+            const value = itme[5];
+            return value;
         }
         /**
          * 设置超声波灯光
@@ -460,6 +505,41 @@ namespace robobloq {
         let item = rb.read(8);
         return pro.parseUltrasonicValue(item);
     }
+
+    //读取声音传感器数值
+    //% blockId="getSoundValue" block="%port |get the value of the sound sensor"*/
+    export function getSoundValue(port: portEnum): number {
+            let orid = rb.orderId();
+            let list = pro.getSoundValue(orid, port);
+            rb.write(list);
+            basic.pause(200);
+            let item = rb.read(8);
+            return pro.parseSoundValue(item);
+    }
+
+    //读取人体红外传感器
+    //% blockId="getHomanValue" block="%port |get the human sensor value"*/
+    export function getHomanValue(port: portEnum): number {
+        let orid = rb.orderId();
+        let list = pro.getHomanValue(orid, port);
+        rb.write(list);
+        basic.pause(200);
+        
+        let item = rb.read(7);
+        return pro.parseHomanValue(item);
+    }
+
+    //读取温度传器数值
+    //% blockId="getTemperatureValue" block="%port |get the temperature sensor value"*/
+    export function getTemperatureValue(port: portEnum): number {
+            let orid = rb.orderId();
+            let list = pro.getTemperatureValue(orid, port);
+            rb.write(list);
+            basic.pause(200);
+            let item =rb.read(10);
+            return pro.parseTemperatureValue(item);
+    }
+
 
 
 }
