@@ -369,12 +369,28 @@ namespace robobloq {
             //this.read();
         }
     
-        read():void{
-            let db = serial.readString();
+        read(leng:number):number[]{
+            
+            let dd = serial.readBuffer(leng);
             basic.pause(20);
+            let list :number[] = [];
+            for(let i = 0;i < leng; i ++){
+                list[i] = dd.getNumber(NumberFormat.Int8LE, i);
+            }
+            
+           return list;
+           /*
+            basic.pause(200);
+            
+            let db = serial.readString();
+
+            basic.pause(20);
+            basic.showNumber(db.length);
+            basic.pause(200);
             if(db && db.length >4){
                 this.dataPush(db);
             }
+            */
         }
 
         SystemInit(): void {
@@ -440,8 +456,8 @@ namespace robobloq {
         let list = pro.getUltrasonicValue(oid,e);
         rb.write(list);
         // 开始读取数据
-        rb.read();
-        let item = rb.getDataItem(oid,0);
+        //rb.read(8);
+        let item = rb.read(8);
         return pro.parseUltrasonicValue(item);
     }
 
