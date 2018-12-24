@@ -152,6 +152,30 @@ enum enumSoundTime {
     Double=2000
 }
 
+// setEngine
+enum engineEnum{
+    //% block="M1"
+    m1 = 2,
+    //% block="M2"
+    m2 = 1
+}
+
+
+// setDirection
+enum directionEnum2{
+    //% block="clockwise"
+    clockwise = 0,
+    //% block="anticlockwise"
+    anticlockwise = 1,
+}
+
+// setEngine3
+enum engineEnum3{
+    //% block="M1"
+    m1 = 1,
+    //% block="M2"
+    m2 = 2
+}
 /**
  * 自定义图形块
  */
@@ -202,6 +226,22 @@ namespace robobloq {
             list[size-1] = this.sumCheck(list,0);
             return list;
         }
+        // 获取光线传感器数值
+        getLightValue(order: number, port: number): number[]{
+            let size: number = 7 ;
+            let list: number[]= [82,66, size, order, 0xA6, port,0];
+            list[size-1] = this.sumCheck(list,0);
+            return list;
+        }
+        // 获取寻线传感器数值
+        getLinePatrolValue(order: number, port: number): number[]{
+            let size: number = 7 ;
+            let list: number[]= [82,66, size, order, 0xA4, port,0];
+            list[size-1] = this.sumCheck(list,0);
+            return list;
+        }
+
+
         /**
          * 获取超声波数值（单位 cm）
          */
@@ -234,6 +274,18 @@ namespace robobloq {
             const value = itme[5];
             return value;
         }
+        // 获取光线传感器数值
+        parseLightValue (itme: number[]): number{
+            if (!itme || itme.length <= 5) return 0;
+            const value = itme[5]* 256 + itme[6];
+            return value;
+        }
+        // 获取寻线传感器数值
+        parseLineValue (itme: number[]): number{
+            if (!itme || itme.length <= 5) return 0;
+            const value = itme[5];
+            return value;
+        }  
         /**
          * 设置超声波灯光
          */
@@ -273,6 +325,20 @@ namespace robobloq {
         setMove(order:number, m1Speed:number, m2Speed:number):number[] {
             let size:number = 9 ;
             let list:number[]=[82,66,size,order, 0x11,0,m1Speed,m2Speed,0];
+            list[size-1] = this.sumCheck(list,0);
+            return list;
+        }
+        // 设置外置电机
+        setOutEngine(order:number, port:number, engine:number, radian1:number, radian2:number): number[]{
+            let size: number = 10 ;
+            let list: number[]= [82,66, size, order,  0x1a, port, engine, radian1, radian2, 0];
+            list[size-1] = this.sumCheck(list,0);
+            return list;
+        }
+        // 设置舵机角度
+        setEngine(order: number, port: number, type: number, radian1: number, radian2:number): number[]{
+            let size: number = 10 ;
+            let list: number[]= [82,66, size, order, 0x19, port, type, radian1, radian2,0];
             list[size-1] = this.sumCheck(list,0);
             return list;
         }
@@ -484,6 +550,30 @@ namespace robobloq {
             let list = pro.setMove(oid,m1Speed, m2Speed);
             rb.write(list);
     }
+    // 设置外置电机速度
+    //% blockId="setOutEngine" block="set the motor %port |plug%type |%Direction |motion, at speed%speed"
+    export function setOutEngine(port: portEnum, type: engineEnum, Direction: directionEnum2, speed:number): void {
+        let order = 0;
+        switch(Direction){
+        case 0:
+            speed = speed;
+            break;
+        case 1:
+            speed = -speed;
+            break;
+        }
+        let list = pro.setOutEngine(order, port, type, speed, speed);
+        rb.write(list);
+    }
+
+    //舵机
+    //% blockId="setEngine" block="set the steering gear %port |plug%type |angle%angle"
+    export function setEngine(port: portEnum, type: engineEnum3, radian1: number): void {
+        let oid = 0;
+        let radian2 = 0; 
+        let list = pro.setEngine(oid, port, type, radian1, radian2);
+        rb.write(list);
+    }
 
     // 设置超声波颜色
     //% blockId="setUltrasonicLight" block="set %e| the ultrasonic red %red|green %green | blue %blue"
@@ -538,6 +628,41 @@ namespace robobloq {
             basic.pause(200);
             let item =rb.read(10);
             return pro.parseTemperatureValue(item);
+    }
+
+    //读取湿度传感器数值
+    //% blockId="getHumidityValue" block="%port |get the humidity sensor value"*/
+    export function getHumidityValue(port: portEnum): number {
+        let orid = rb.orderId();
+        let list = pro.getTemperatureValue(orid, port);
+        rb.write(list);
+        basic.pause(1000);
+        let item = rb.read(10);
+        return pro.parseHumidityValue(item);  
+    }
+
+    //读取光线 传感器数值
+   //% blockId="getLightValue" block="%port |get the light sensor value"*/
+   export function getLightValue(port: portEnum): number {
+    let orid = rb.orderId();
+    let list = pro.getLightValue(orid, port);
+    rb.write(list);
+    basic.pause(200);
+    let item = rb.read(8);
+    return pro.parseLightValue(item);
+    }
+
+    /**
+     * 获取巡线数值（单位豪米）
+     */
+    //% blockId="getLinePatrolValue" block="%port |get for line follower sensor"*/
+    export function getLinePatrolValue(port: portEnum): number {
+        let orid = rb.orderId();
+        let list = pro.getLinePatrolValue(orid, port);
+        rb.write(list);
+        basic.pause(200);
+        let item = rb.read(7);
+        return pro.parseLineValue(item);
     }
 
 

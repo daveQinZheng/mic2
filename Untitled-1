@@ -1,0 +1,67 @@
+basic.showLeds(`
+    . . # # .
+    . # . . #
+    # . . . #
+    . # . . #
+    . . # # #
+    `)
+
+serial.redirect(
+SerialPin.P0,
+SerialPin.P1,
+BaudRate.BaudRate57600
+)
+
+basic.pause(500)
+
+basic.showLeds(`
+    . . . . .
+    . . . . .
+    . . . . .
+    . . . . .
+    . . . . .
+    `)
+
+let date = pins.createBuffer(10)
+let date2 = pins.createBuffer(11)
+basic.forever(function () {
+    date.setNumber(NumberFormat.Int8LE, 0, 82)
+    date.setNumber(NumberFormat.Int8LE, 1, 66)
+    date.setNumber(NumberFormat.Int8LE, 2, 10)
+    date.setNumber(NumberFormat.Int8LE, 3, 0)
+    date.setNumber(NumberFormat.Int8LE, 4, 16)
+    date.setNumber(NumberFormat.Int8LE, 5, 0)
+    date.setNumber(NumberFormat.Int8LE, 6, 0)
+    date.setNumber(NumberFormat.Int8LE, 7, 0)
+    date.setNumber(NumberFormat.Int8LE, 8, 0)
+    date.setNumber(NumberFormat.Int8LE, 9, 174)
+    serial.writeBuffer(date)
+
+    basic.pause(500)
+    date.setNumber(NumberFormat.Int8LE, 0, 82)
+    date.setNumber(NumberFormat.Int8LE, 1, 66)
+    date.setNumber(NumberFormat.Int8LE, 2, 10)
+    date.setNumber(NumberFormat.Int8LE, 3, 0)
+    date.setNumber(NumberFormat.Int8LE, 4, 16)
+    date.setNumber(NumberFormat.Int8LE, 5, 0)
+    date.setNumber(NumberFormat.Int8LE, 6, 200)
+    date.setNumber(NumberFormat.Int8LE, 7, 50)
+    date.setNumber(NumberFormat.Int8LE, 8, 50)
+    date.setNumber(NumberFormat.Int8LE, 9, 218)
+    serial.writeBuffer(date)
+    basic.pause(500)
+
+    date2.setNumber(NumberFormat.Int8LE, 0, 82)
+    date2.setNumber(NumberFormat.Int8LE, 1, 66)
+    date2.setNumber(NumberFormat.Int8LE, 2, 11)
+    date2.setNumber(NumberFormat.Int8LE, 3, 0)
+    date2.setNumber(NumberFormat.Int8LE, 4, 19)
+    date2.setNumber(NumberFormat.Int8LE, 5, 250)
+    date2.setNumber(NumberFormat.Int8LE, 6, 1)
+    date2.setNumber(NumberFormat.Int8LE, 7, 6)
+    date2.setNumber(NumberFormat.Int8LE, 8, 1)
+    date2.setNumber(NumberFormat.Int8LE, 9, 244)
+    date2.setNumber(NumberFormat.Int8LE, 10, 168)
+    serial.writeBuffer(date2)
+    basic.pause(500)
+})
