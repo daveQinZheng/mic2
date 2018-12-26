@@ -247,13 +247,32 @@ namespace robobloq {
          */
         parseUltrasonicValue(itme:number[]):number {
             if (!itme || itme.length < 6) return 0;
-            const value :number= itme[5]  * 256 + itme[6];
+            let value :number= 0;
+            if(itme[6] < 0){
+                value = itme[5]  * 256 + (itme[6] + 256);
+            }else{
+                value = itme[5]  * 256 + itme[6] ;
+            }
             return Math.idiv(value , 10);
         }
         // 获取声音传感器数值
         parseSoundValue(itme: number[]): number{
             if (!itme || itme.length <= 5) return 0;
-            const value = itme[5]* 256 + itme[6];
+            let value = 0;
+            if(itme[6] < 0){
+                value = itme[5]* 256 + (itme[6] + 256);
+            }else{
+                value = itme[5]* 256 + itme[6];
+            }
+            /*
+            basic.showNumber(itme[5]);
+            basic.pause(50);
+            basic.showString(":")
+            basic.pause(50);
+            basic.showNumber(itme[6]);
+            basic.pause(50);
+            basic.showString(":")
+            */
             return value;
         }
         // 获取人体红外传感器数值
@@ -265,7 +284,8 @@ namespace robobloq {
         // 获取温度传感器数值
         parseTemperatureValue(itme: number[]): number{
             if (!itme || itme.length <= 5) return 0;
-            const value = itme[7];
+            const value = itme[7] ;
+          
             return value;
         }
         // 获取湿度传感器数值
@@ -277,7 +297,12 @@ namespace robobloq {
         // 获取光线传感器数值
         parseLightValue (itme: number[]): number{
             if (!itme || itme.length <= 5) return 0;
-            const value = itme[5]* 256 + itme[6];
+            let value = 0;
+            if(itme[5] < 0){
+                value = itme[5]* 256 + (itme[6] + 256);
+            }else{
+                value = itme[5]* 256 + itme[6];
+            }
             return value;
         }
         // 获取寻线传感器数值
@@ -664,6 +689,8 @@ namespace robobloq {
         let item = rb.read(7);
         return pro.parseLineValue(item);
     }
+
+
 
 
 
